@@ -45,4 +45,3 @@ LICENSE
 =======
 
 GPLv2
-
