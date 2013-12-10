@@ -111,7 +111,7 @@ graph_title ${NAME}
 graph_category fuelprices
 graph_vlabel Euro
 graph_info Prices for ${FUEL_KIND} at ${NAME} (${STREET} - ${ZIP} - ${CITY})
-price.label Euro
+price.label ${FUEL_KIND}
 EOF
 	print_warning price
 	print_critical price
