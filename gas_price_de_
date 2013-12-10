@@ -1,0 +1,147 @@
+#!/bin/sh
+
+# -*- sh -*-                                                                                                                                  
+# vim: ft=sh                                                                                                                                  
+                                                                                                                                              
+: <<=cut                                                                                                                                      
+                                                                                                                                              
+=head1 NAME
+
+gas_price_de_ - Graph gas prices of gas stations ins germany using 
+the http://tanken.t-online.de API
+
+=head1 PREREQUISITES
+
+This plugin uses the "xmllint" program provided by 
+libxml2 (http://www.xmlsoft.org) and the "wget" utility
+(http://www.gnu.org/software/wget/)
+
+=head1 CONFIGURATION
+
+The filename must be in this format: gas_price_de_latitude_longitude 
+ latitude must be the exact latitude of the gas station
+ longitude must be the exact longitude of the gas station
+
+The following environment variables are used by this plugin
+ 
+ fuel_type           - The type of fuel. Supported values are:
+                          diesel
+                          super      	[default]
+                          super%20e10
+                          superplus
+                          autogas
+                          biodiesel
+                          lkw-diesel
+                          dieselplus
+
+=head2 CONFIGURATION EXAMPLES
+
+ [gas_price_de_52.527567_13.416131]
+  env.fuel_type autogas
+
+=head1 AUTHOR
+
+Copyright (C) 2013 D.Hiepler
+
+=head1 LICENSE
+
+GPLv2
+
+=head1 MAGICK MARKERS
+
+ #%# family=manual
+
+=cut
+
+. $MUNIN_LIBDIR/plugins/plugin.sh
+
+
+# API url
+URL="http://tanken.t-online.de/api/v1/search.xml"
+# maximum age of returned price
+PRICE_AGE="24"
+
+# parse coordinates
+CORDS=${0##*gas_price_de_}
+LAT=${CORDS%%_*}
+LNG=${CORDS##*_}
+
+if [ -z ${LAT} ] ; then LAT=52.527567 ; fi
+if [ -z ${LNG} ] ; then LNG=13.416131 ; fi
+
+
+# build query
+QUERY="${URL}?lat=${LAT}&lng=${LNG}&radius=0&price_age=${PRICE_AGE}&fuels=${fuel_type:-super}"
+
+
+
+
+# fetch XML from API
+function query()
+{
+	# fetch file to tempfile
+	XML=$(tempfile -p gas)
+	wget --quiet "${QUERY}" -O "${XML}" || return ""
+	echo ${XML}
+}
+
+# output configuration
+function config()
+{
+	XML=$(query) || return 1
+
+	# parse name
+	NAME=$(xmllint --xpath "string(/search/gasStations/gasStation/@name)" ${XML})
+
+	# parse fuel type
+	FUEL_KIND=$(xmllint --xpath "string(/search/gasStations/gasStation/fuels/fuel/@kind)" ${XML})
+
+	# parse address
+	STREET=$(xmllint --xpath "string(/search/gasStations/gasStation/@street)" ${XML})
+	ZIP=$(xmllint --xpath "string(/search/gasStations/gasStation/@zip)" ${XML})
+	CITY=$(xmllint --xpath "string(/search/gasStations/gasStation/@city)" ${XML})
+
+	cat <<EOF
+graph_title ${NAME}
+graph_category fuelprices
+graph_vlabel Euro
+graph_info Prices for ${FUEL_KIND} at ${NAME} (${STREET} - ${ZIP} - ${CITY})
+price.label Euro
+EOF
+	print_warning price
+	print_critical price
+
+	# cleanup
+	rm "${XML}"
+}
+
+
+# output the last known price
+function output()
+{
+	XML=$(query) || return 1
+
+	# parse name
+	PRICE=$(xmllint --xpath "string(/search/gasStations/gasStation/fuels/fuel/@price)" ${XML})
+
+	echo "price.value ${PRICE}"
+
+	# cleanup
+	rm "${XML}"
+}
+
+
+
+# ----------------------------------------------------------------------------
+
+case $1 in
+	"config")
+		config || die "config failed"
+		exit
+		;;
+	*)
+		output || die "$0 failed"
+		exit
+		;;
+esac
+
