@@ -7,8 +7,8 @@
                                                                                                                                               
 =head1 NAME
 
-gas_price_de_ - Graph gas prices of gas stations ins germany using 
-the http://tanken.t-online.de API
+gas_price_de_ - Graph prices of gas stations in germany with munin
+by using the http://tanken.t-online.de API
 
 =head1 PREREQUISITES
 
