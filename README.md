@@ -21,20 +21,22 @@ The filename must be in this format: gas_price_de_latitude_longitude
 The following environment variables are used by this plugin
  
 * fuel_type - The type of fuel. Supported values are:
---* diesel
---* super _[default]_
---* super%20e10
---* superplus
---* autogas
---* biodiesel
---* lkw-diesel
---* dieselplus
+  * diesel
+  * super _[default]_
+  * super%20e10
+  * superplus
+  * autogas
+  * biodiesel
+  * lkw-diesel
+  * dieselplus
 
 CONFIGURATION EXAMPLES
 ----------------------
 
- [gas_price_de_52.527567_13.416131]
-  env.fuel_type autogas
+<pre>
+  [gas_price_de_52.527567_13.416131]
+    env.fuel_type autogas
+</pre>
 
 AUTHOR
 ======
