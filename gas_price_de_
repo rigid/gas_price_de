@@ -156,9 +156,6 @@ EOS
 		if [ -z "${name}" ] ; then die "gas station has empty name" ; fi
 
 		echo "${sid}.label ${name}"
-		
-		print_warning ${sid}
-		print_critical ${sid}
 	done
 }
 
