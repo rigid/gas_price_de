@@ -152,10 +152,16 @@ EOS
 	for sid in ${GAS_STATIONS[@]} ; do 
 		# get name
 		name=$(xmllint --xpath "string(/search/gasStations/gasStation[@ident=\"${sid}\"]/@name)" ${XML})
+		# get address
+		street=$(xmllint --xpath "string(/search/gasStations/gasStation[@ident=\"${sid}\"]/@street)" ${XML})
+		zip=$(xmllint --xpath "string(/search/gasStations/gasStation[@ident=\"${sid}\"]/@zip)" ${XML})
+		city=$(xmllint --xpath "string(/search/gasStations/gasStation[@ident=\"${sid}\"]/@city)" ${XML})
+
 		# handle errors
 		if [ -z "${name}" ] ; then die "gas station has empty name" ; fi
 
 		echo "${sid}.label ${name}"
+		echo "${sid}.info ${street} - ${zip} ${city}"
 	done
 }
 
