@@ -20,7 +20,7 @@ CONFIGURATION
 =============
 
 The filename must be in this format: gas_price_de_ID with
-ID beeing a freely choosable string to allow creating 
+ID being a freely choosable string to allow creating 
 multiple graphs and to set the title of the graph. ID may be empty.
 
 The following environment variables are used by this plugin
