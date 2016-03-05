@@ -7,7 +7,7 @@ DESCRIPTION
 ===========
 
 Graph prices of certain fuel types at gas stations within an area (defined by center 
-and radius) in germany using with munin. This uses the http://tanken.t-online.de API.
+and radius) in germany with munin. This uses the http://tanken.t-online.de API.
 
 PREREQUISITES
 =============
